@@ -5,20 +5,29 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final JwtFilter jwtFilter;
+
+    public SecurityConfig(JwtFilter jwtFilter) {
+        this.jwtFilter = jwtFilter;
+    }
+
     @Bean
     public SecurityFilterChain filter(HttpSecurity http) throws Exception {
-        // Nueva sintaxis de Spring Security para Spring Boot 3
         http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/auth/**").permitAll()
-                .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
-            .httpBasic(basic -> {}); // Configuración de httpBasic
+            // Desactivamos la autenticación básica de la ventana emergente
+            // y ponemos nuestro Filtro JWT como guardia principal
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+            
         return http.build();
     }
 }

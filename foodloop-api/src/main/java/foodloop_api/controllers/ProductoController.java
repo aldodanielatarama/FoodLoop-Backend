@@ -43,4 +43,28 @@ public class ProductoController {
         repository.deleteById(id);
         return "Producto eliminado exitosamente";
     }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Buscar por ID", description = "Devuelve un único producto filtrado por su ID")
+    public Producto buscarPorId(@PathVariable Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Error: Producto no encontrado con el ID " + id));
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Actualizar excedente", description = "Modifica los datos de un producto ya existente")
+    public Producto actualizar(@PathVariable Long id, @Valid @RequestBody ProductoDTO dto) {
+        // 1. Buscamos si el producto existe
+        Producto productoExistente = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Error: Producto no encontrado con el ID " + id));
+        
+        // 2. Actualizamos sus datos con lo que envíe el cliente
+        productoExistente.setNombre(dto.getNombre());
+        productoExistente.setCategoria(dto.getCategoria());
+        productoExistente.setPrecioDescuento(dto.getPrecioDescuento());
+        productoExistente.setStock(dto.getStock());
+        
+        // 3. Guardamos los cambios
+        return repository.save(productoExistente);
+    }
 }
