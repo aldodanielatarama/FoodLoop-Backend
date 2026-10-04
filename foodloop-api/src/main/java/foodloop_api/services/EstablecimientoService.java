@@ -53,4 +53,4 @@ public class EstablecimientoService {
         est.setNombreResponsable(dto.getNombreResponsable());
         est.setTelefonoResponsable(dto.getTelefonoResponsable());
     }
-}
+]
