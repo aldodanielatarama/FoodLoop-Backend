@@ -1,29 +1,35 @@
 package foodloop_api.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "establecimientos")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Establecimiento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 150)
+    @Column(nullable = false)
     private String nombreComercial;
 
-    @Column(nullable = false, length = 200)
+    @Column(nullable = false)
     private String direccion;
 
-    @Column(length = 20)
+   
+    private Double latitud;
+    private Double longitud;
+
     private String telefono;
-
-    @Column(length = 100)
     private String correo;
-
-    @Column(length = 100)
     private String horarioAtencion;
+
+    private String nombreResponsable;
+    private String telefonoResponsable;
 }
