@@ -20,33 +20,37 @@ public class EstablecimientoService {
         return repository.findAll();
     }
 
-    public Establecimiento guardar(EstablecimientoDTO dto) {
-        Establecimiento est = new Establecimiento();
-        est.setNombreComercial(dto.getNombreComercial());
-        est.setDireccion(dto.getDireccion());
-        est.setTelefono(dto.getTelefono());
-        est.setCorreo(dto.getCorreo());
-        est.setHorarioAtencion(dto.getHorarioAtencion());
-        return repository.save(est);
-    }
-
     public Establecimiento buscarPorId(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Error: Establecimiento no encontrado con ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Establecimiento no encontrado con id: " + id));
+    }
+
+    public Establecimiento guardar(EstablecimientoDTO dto) {
+        Establecimiento est = new Establecimiento();
+        mapearDtoAEntidad(est, dto);
+        return repository.save(est);
     }
 
     public Establecimiento actualizar(Long id, EstablecimientoDTO dto) {
         Establecimiento est = buscarPorId(id);
-        est.setNombreComercial(dto.getNombreComercial());
-        est.setDireccion(dto.getDireccion());
-        est.setTelefono(dto.getTelefono());
-        est.setCorreo(dto.getCorreo());
-        est.setHorarioAtencion(dto.getHorarioAtencion());
+        mapearDtoAEntidad(est, dto);
         return repository.save(est);
     }
 
     public void eliminar(Long id) {
         Establecimiento est = buscarPorId(id);
         repository.delete(est);
+    }
+
+    private void mapearDtoAEntidad(Establecimiento est, EstablecimientoDTO dto) {
+        est.setNombreComercial(dto.getNombreComercial());
+        est.setDireccion(dto.getDireccion());
+        est.setLatitud(dto.getLatitud());
+        est.setLongitud(dto.getLongitud());
+        est.setTelefono(dto.getTelefono());
+        est.setCorreo(dto.getCorreo());
+        est.setHorarioAtencion(dto.getHorarioAtencion());
+        est.setNombreResponsable(dto.getNombreResponsable());
+        est.setTelefonoResponsable(dto.getTelefonoResponsable());
     }
 }
