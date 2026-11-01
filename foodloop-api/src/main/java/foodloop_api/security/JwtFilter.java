@@ -1,52 +1,39 @@
 package foodloop_api.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import foodloop_api.models.Usuario;
+import foodloop_api.repositories.UsuarioRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
-import java.security.Key;
-import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
-
-    // Debe ser exactamente la misma clave que usamos en JwtUtil
-    private final String SECRET = "FoodLoopSecretoJWT12345678901234567890";
-    private final Key SECRET_KEY = Keys.hmacShaKeyFor(SECRET.getBytes());
-
+    private final JwtUtil jwt;
+    private final UsuarioRepository usuarios;
+    public JwtFilter(JwtUtil jwt, UsuarioRepository usuarios) { this.jwt = jwt; this.usuarios = usuarios; }
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String header = request.getHeader("Authorization");
-
-        if (header != null && header.startsWith("Bearer ")) {
-            String token = header.substring(7);
+    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
+            throws IOException, ServletException {
+        String h = req.getHeader("Authorization");
+        if (h != null && h.startsWith("Bearer ")) {
             try {
-                // Lee y valida el token
-                Claims claims = Jwts.parserBuilder()
-                        .setSigningKey(SECRET_KEY)
-                        .build()
-                        .parseClaimsJws(token)
-                        .getBody();
-
-                String username = claims.getSubject();
-                // Si es válido, le dice a Spring Security que te deje pasar
-                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
-                    SecurityContextHolder.getContext().setAuthentication(auth);
+                String username = jwt.leerUsuario(h.substring(7));
+                Usuario u = usuarios.findByUsername(username);
+                if (u != null && !"SUSPENDIDO".equals(u.getEstadoCuenta())) {
+                    String rol = u.getRol() == null ? "COMPRADOR" : u.getRol();
+                    SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
+                            username, null, List.of(new SimpleGrantedAuthority("ROLE_" + rol))));
                 }
-            } catch (Exception e) {
-                System.out.println("Fallo al validar token: " + e.getMessage());
-            }
+            } catch (Exception ex) { SecurityContextHolder.clearContext(); }
         }
-        filterChain.doFilter(request, response);
+        chain.doFilter(req, res);
     }
 }

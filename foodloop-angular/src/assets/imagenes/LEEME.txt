@@ -1,0 +1,7 @@
+Puedes poner aquí las imágenes del proyecto, por ejemplo:
+- portada.jpg
+- pan.jpg
+- frutas.jpg
+- donacion.jpg
+Después indícalas como ruta /assets/imagenes/portada.jpg o en el campo imagenUrl al publicar un lote.
+Sin imágenes, la página muestra fondos CSS y recuadros editables. No se usan capturas de una web para simular su interfaz.

@@ -52,5 +52,11 @@ public class EstablecimientoService {
         est.setHorarioAtencion(dto.getHorarioAtencion());
         est.setNombreResponsable(dto.getNombreResponsable());
         est.setTelefonoResponsable(dto.getTelefonoResponsable());
+        est.setRuc(dto.getRuc());
+        est.setDistrito(dto.getDistrito());
+        est.setHorarioRecojo(dto.getHorarioRecojo());
+        est.setVende(dto.getVende());
+        est.setDona(dto.getDona());
+        est.setMinutosPreparacion(dto.getMinutosPreparacion());
     }
-]
+}

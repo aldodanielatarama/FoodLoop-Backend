@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class EstablecimientoController {
         return service.listar();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     @Operation(summary = "Registrar establecimiento", description = "Registra un nuevo local asociado a FoodLoop")
     public Establecimiento guardar(@Valid @RequestBody EstablecimientoDTO dto) {
@@ -39,12 +41,14 @@ public class EstablecimientoController {
         return service.buscarPorId(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar establecimiento", description = "Actualiza la información comercial del establecimiento")
     public Establecimiento actualizar(@PathVariable Long id, @Valid @RequestBody EstablecimientoDTO dto) {
         return service.actualizar(id, dto);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar establecimiento", description = "Elimina un comercio del registro")
     public String eliminar(@PathVariable Long id) {

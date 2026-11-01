@@ -1,0 +1,33 @@
+<div class="page-heading"><div class="container"><span class="eyebrow">MI ESPACIO FOODLOOP</span><h1>Panel de usuario</h1><p>Bienvenido, {{perfil?.nombre||auth.sesion?.username}} · Rol: <strong>{{auth.sesion?.rol}}</strong></p></div></div>
+<section class="section"><div class="container">
+ <div class="panel-nav"><a href="#principal">Mi actividad</a><a href="#mis-solicitudes">Mis solicitudes</a><a href="#notificaciones">Notificaciones</a><a href="#incidencias">Incidencias</a><a href="#rutas">Ruta estimada</a><a routerLink="/catalogo">Ver catálogo</a></div>
+ <div id="principal">
+  <app-vendedor *ngIf="auth.sesion?.rol==='VENDEDOR'"></app-vendedor>
+  <app-organizacion *ngIf="auth.sesion?.rol==='ORGANIZACION'"></app-organizacion>
+  <app-administracion *ngIf="auth.sesion?.rol==='ADMIN'"></app-administracion>
+  <div class="panel-section" *ngIf="auth.sesion?.rol==='COMPRADOR'"><h2>Mis compras y reservas</h2><p>Encuentra una oferta desde el catálogo y reserva unidades disponibles. Comprueba el código de recojo y el estado aquí.</p><a class="primary-btn" routerLink="/catalogo">Explorar alimentos</a></div>
+ </div>
+ <section class="panel-section" id="mis-solicitudes"><div class="section-bar"><h2>Mis solicitudes</h2><button class="outline-btn" (click)="actualizar()">Actualizar</button></div>
+  <div class="list-cards"><article class="small-card" *ngFor="let s of solicitudes"><span class="eyebrow">#{{s.id}} · {{s.tipo}}</span><h3>{{s.estado}}</h3><p>Lote #{{s.loteId}} · Solicitadas: {{s.cantidadSolicitada}} · Asignadas: {{s.cantidadAsignada}}</p><p *ngIf="s.codigoRetiro">Código para presentar al comercio: <strong>{{s.codigoRetiro}}</strong></p>
+  <div class="actions"><button class="outline-btn" *ngIf="s.estado==='ASIGNADA'||s.estado==='LISTA'||s.estado==='ENTREGADA'" (click)="consultarEntrega(s.id)">Seguimiento</button><button class="outline-btn" *ngIf="s.estado==='PENDIENTE'||s.estado==='ASIGNADA'||s.estado==='PARCIAL_OFRECIDA'" (click)="cancelar(s.id)">Cancelar solicitud</button></div></article></div>
+  <p class="muted" *ngIf="!solicitudes.length">Aún no tienes solicitudes.</p>
+  <div class="notice" *ngIf="entrega"><strong>Entrega #{{entrega.solicitudId}}</strong><p>Estado: {{entrega.estado}} · Origen: {{entrega.origen}}</p><p>Hora registrada: {{entrega.horaEstimada | date:'dd/MM HH:mm'}}</p><small>No se simula GPS en tiempo real.</small></div>
+ </section>
+ <section class="panel-section" id="notificaciones"><h2>Notificaciones</h2><div class="list-cards"><article class="small-card" *ngFor="let n of avisos"><strong>{{n.titulo}}</strong><p>{{n.mensaje}}</p><small>{{n.fecha | date:'dd/MM/yyyy HH:mm'}}</small></article></div><p class="muted" *ngIf="!avisos.length">No tienes notificaciones.</p></section>
+ <section class="panel-section" id="incidencias"><h2>Comunicar una incidencia</h2><p class="muted">Registra problemas con la calidad declarada, el pedido o el recojo.</p>
+  <form class="form-grid" (ngSubmit)="reportar()"><label>ID solicitud (opcional)<input type="number" name="solicitud" [(ngModel)]="incidencia.solicitudId" /></label><label>Tipo<select name="tipo" [(ngModel)]="incidencia.tipo"><option>RECOJO</option><option>ALIMENTO</option><option>HORARIO</option><option>OTRO</option></select></label><label class="wide">Descripción<textarea name="descripcion" [(ngModel)]="incidencia.descripcion" required></textarea></label><div class="form-actions"><button class="primary-btn" type="submit">Enviar incidencia</button></div></form>
+  <div class="list-cards"><article class="small-card" *ngFor="let i of incidencias"><span class="eyebrow">#{{i.id}} · {{i.estado}}</span><strong>{{i.tipo}}</strong><p>{{i.descripcion}}</p><p *ngIf="i.resolucion">Resolución: {{i.resolucion}}</p></article></div>
+ </section>
+ <section class="panel-section" id="rutas"><h2>Consultar tiempo de ruta</h2>
+  <p class="muted">Introduce coordenadas de origen y destino para consultar la API de rutas conectada al backend. No mostramos tiempos ficticios. Requiere una clave de Google Maps configurada en Spring Boot.</p>
+  <form class="form-grid" (ngSubmit)="calcularRuta()">
+    <label>Latitud de origen<input name="orLat" type="number" step="any" [(ngModel)]="ruta.origenLat" required /></label>
+    <label>Longitud de origen<input name="orLon" type="number" step="any" [(ngModel)]="ruta.origenLon" required /></label>
+    <label>Latitud de destino<input name="deLat" type="number" step="any" [(ngModel)]="ruta.destinoLat" required /></label>
+    <label>Longitud de destino<input name="deLon" type="number" step="any" [(ngModel)]="ruta.destinoLon" required /></label>
+    <div class="form-actions"><button class="primary-btn" type="submit">Consultar ruta</button></div>
+  </form>
+  <pre *ngIf="resultadoRuta" class="route-result">{{resultadoRuta | json}}</pre>
+ </section>
+ <p class="message success" *ngIf="mensaje">{{mensaje}}</p><p class="message error" *ngIf="error">{{error}}</p>
+</div></section>

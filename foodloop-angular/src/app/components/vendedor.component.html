@@ -1,0 +1,55 @@
+<div class="panel-section"><h2>Mi comercio</h2><p class="muted">Registra tu negocio para poder publicar alimentos. Los productos quedarán vinculados al comercio.</p>
+  <div class="list-cards" *ngIf="comercios.length"><article class="small-card" *ngFor="let c of comercios"><strong>{{ c.nombreComercial }}</strong><p>{{ c.direccion }} · {{ c.distrito }}</p><small>ID del comercio: {{c.id}}</small></article></div>
+  <details class="form-details"><summary>Agregar establecimiento</summary>
+    <form (ngSubmit)="registrarComercio()" class="form-grid">
+      <label>Nombre comercial *<input name="nombre" [(ngModel)]="comercio.nombreComercial" required /></label>
+      <label>Dirección *<input name="direccion" [(ngModel)]="comercio.direccion" required /></label>
+      <label>Distrito<input name="distrito" [(ngModel)]="comercio.distrito" /></label>
+      <label>RUC<input name="ruc" [(ngModel)]="comercio.ruc" /></label>
+      <label>Responsable<input name="responsable" [(ngModel)]="comercio.nombreResponsable" /></label>
+      <label>Teléfono responsable<input name="telefonoResponsable" [(ngModel)]="comercio.telefonoResponsable" /></label>
+      <label>Teléfono del local<input name="telefono" [(ngModel)]="comercio.telefono" /></label>
+      <label>Correo<input name="correo" [(ngModel)]="comercio.correo" /></label>
+      <label>Horario de atención<input name="atencion" [(ngModel)]="comercio.horarioAtencion" placeholder="09:00-19:00" /></label>
+      <label>Horario de recojo<input name="recojo" [(ngModel)]="comercio.horarioRecojo" placeholder="15:00-18:00" /></label>
+      <label>Minutos de preparación<input name="minutos" type="number" [(ngModel)]="comercio.minutosPreparacion" min="0" /></label>
+      <div class="form-actions"><button class="primary-btn" type="submit">Guardar establecimiento</button></div>
+    </form>
+  </details>
+</div>
+<div class="panel-section"><h2>Publicar excedentes</h2><p class="muted">La fecha límite de reserva no puede superar la de recojo, y el recojo no puede superar el vencimiento. Los datos deben ser reales.</p>
+  <form class="form-grid" (ngSubmit)="publicar()">
+    <label>Establecimiento *<select name="establecimiento" [(ngModel)]="lote.establecimientoId"><option *ngFor="let c of comercios" [ngValue]="c.id">{{c.nombreComercial}}</option></select></label>
+    <label>Nombre del alimento *<input name="nombreLote" [(ngModel)]="lote.nombre" required /></label>
+    <label>Categoría<select name="categoria" [(ngModel)]="lote.categoria"><option>Panadería</option><option>Comida preparada</option><option>Frutas y verduras</option><option>Abarrotes</option><option>Otros</option></select></label>
+    <label>Modalidad<select name="modalidad" [(ngModel)]="lote.modalidad"><option value="VENTA">Venta</option><option value="DONACION">Donación</option></select></label>
+    <label>Cantidad *<input name="cantidad" type="number" min="1" [(ngModel)]="lote.cantidad" required /></label>
+    <label>Peso por unidad (kg)<input name="peso" type="number" step="0.01" min="0" [(ngModel)]="lote.pesoPorUnidadKg" /></label>
+    <label>Precio original (S/)<input name="original" type="number" step="0.01" min="0" [(ngModel)]="lote.precioOriginal" /></label>
+    <label *ngIf="lote.modalidad==='VENTA'">Precio rebajado (S/) *<input name="precio" type="number" step="0.01" min="0" [(ngModel)]="lote.precioLiquidacion" /></label>
+    <label>Preparado (opcional)<input name="preparacion" type="datetime-local" [(ngModel)]="lote.fechaPreparacion" /></label>
+    <label>Fecha y hora de vencimiento *<input name="vence" type="datetime-local" [(ngModel)]="lote.fechaVencimiento" required /></label>
+    <label>Fecha límite para reservar *<input name="reserva" type="datetime-local" [(ngModel)]="lote.limiteReserva" required /></label>
+    <label>Fecha límite de recojo *<input name="limite" type="datetime-local" [(ngModel)]="lote.limiteRecojo" required /></label>
+    <label>Conservación *<select name="conservacion" [(ngModel)]="lote.conservacion"><option>Ambiente protegido</option><option>Refrigerado</option><option>Congelado</option></select></label>
+    <label>Alérgenos *<input name="alergenos" [(ngModel)]="lote.alergenos" placeholder="Ej. gluten; o ninguno declarado" required /></label>
+    <label>Política de donación<select name="politica" [(ngModel)]="lote.politicaAsignacion"><option value="MANUAL">Asignación manual</option><option value="PARCIAL">Distribución parcial</option></select></label>
+    <label>Imagen (opcional)<input name="imagen" [(ngModel)]="lote.imagenUrl" placeholder="/assets/imagenes/pan.jpg" /><small>Puedes colocar aquí la imagen que tú agregues.</small></label>
+    <label class="wide">Ingredientes<input name="ingredientes" [(ngModel)]="lote.ingredientes" /></label>
+    <label class="wide">Descripción<textarea name="descripcion" [(ngModel)]="lote.descripcion"></textarea></label>
+    <div class="form-actions"><button class="primary-btn" type="submit" [disabled]="!comercios.length">Publicar lote</button></div>
+  </form>
+</div>
+<div class="panel-section"><h2>Mis lotes</h2><div class="list-cards"><article class="small-card" *ngFor="let l of lotes"><span class="eyebrow">#{{l.id}} · {{l.modalidad}} · {{l.estado}}</span><h3>{{l.nombre}}</h3><p>Disponible: {{l.stockDisponible}} · Reservado: {{l.stockReservado}}</p><p class="muted small">Recojo hasta {{l.limiteRecojo | date:'dd/MM HH:mm'}}</p><div class="actions"><button class="outline-btn" *ngIf="l.estado==='ACTIVO'" (click)="estado(l.id,'PAUSADO')">Pausar</button><button class="outline-btn" *ngIf="l.estado==='PAUSADO'" (click)="estado(l.id,'ACTIVO')">Reactivar</button><button class="outline-btn" (click)="verHistorial(l.id)">Historial conservación</button></div><div class="inline-form"><input type="number" [(ngModel)]="temperaturas[l.id]" placeholder="°C (opcional)" /><input [(ngModel)]="observaciones[l.id]" placeholder="Observación" /><button class="outline-btn" (click)="conservacion(l.id)">Registrar control</button></div></article></div><p *ngIf="!lotes.length" class="muted">Todavía no has publicado lotes.</p>
+  <div class="small-card" *ngIf="historial.length"><h3>Registros de conservación consultados</h3><p *ngFor="let h of historial">{{h.fecha | date:'dd/MM HH:mm'}} · {{h.temperaturaCelsius}} °C · {{h.observaciones}}</p></div>
+</div>
+<div class="panel-section"><h2>Solicitudes recibidas</h2><p class="muted">Las donaciones pendientes requieren asignación. Una cantidad menor a la solicitada debe ser aceptada por la organización.</p><div class="list-cards">
+  <article class="small-card" *ngFor="let s of solicitudes"><span class="eyebrow">Solicitud #{{s.id}} · {{s.tipo}}</span><h3>{{s.estado}}</h3><p>Lote #{{s.loteId}} · Pedido: {{s.cantidadSolicitada}} · Asignado: {{s.cantidadAsignada}}</p><p class="muted small">{{s.comentario}}</p>
+    <div class="inline-form" *ngIf="s.tipo==='DONACION' && s.estado==='PENDIENTE'"><input type="number" min="1" [max]="s.cantidadSolicitada" [(ngModel)]="accionCantidades[s.id]" [placeholder]="''+s.cantidadSolicitada" /><button class="primary-btn" (click)="asignar(s)">Asignar</button></div>
+    <div class="actions" *ngIf="s.estado==='ASIGNADA'"><button class="primary-btn" (click)="lista(s.id)">Marcar listo para recojo</button></div>
+    <div class="inline-form" *ngIf="s.estado==='LISTA'"><input [(ngModel)]="codigos[s.id]" placeholder="Código mostrado al receptor" /><button class="primary-btn" (click)="entregar(s.id)">Confirmar entrega</button></div>
+    <div class="actions" *ngIf="s.estado==='ASIGNADA' || s.estado==='LISTA' || s.estado==='ENTREGADA'"><button class="outline-btn" (click)="consultarEntrega(s.id)">Ver entrega</button></div>
+  </article>
+</div><div class="small-card" *ngIf="entregaActual"><strong>Seguimiento de solicitud #{{entregaActual.solicitudId}}</strong><p>Estado: {{entregaActual.estado}} · Origen: {{entregaActual.origen}}</p><p>Hora límite registrada: {{entregaActual.horaEstimada | date:'dd/MM HH:mm'}}</p><p class="muted small">El backend no ofrece GPS en tiempo real sin servicio externo configurado.</p></div><p *ngIf="!solicitudes.length" class="muted">Aún no existen solicitudes.</p></div>
+<div class="panel-section"><h2>Reportes y estimación</h2><div class="metric-grid" *ngIf="metricas as m"><div><strong>{{m.lotesPublicados}}</strong><span>Lotes publicados</span></div><div><strong>{{m.solicitudes}}</strong><span>Solicitudes</span></div><div><strong>{{m.entregasConfirmadas}}</strong><span>Entregas</span></div><div><strong>{{m.unidadesEntregadas}}</strong><span>Unidades entregadas</span></div><div><strong>S/ {{m.ingresosRecuperados | number:'1.2-2'}}</strong><span>Ingreso recuperado</span></div></div><p class="muted" *ngIf="estimacion">{{ estimacion.disponible ? 'Promedio histórico de unidades por venta: '+estimacion.promedioUnidadesPorVenta+' (muestra '+estimacion.muestra+')' : estimacion.mensaje }}</p><p class="muted small">Estimación estadística básica; no se presenta como inteligencia artificial entrenada.</p></div>
+<p class="message error" *ngIf="error">{{error}}</p><p class="message success" *ngIf="mensaje">{{mensaje}}</p>

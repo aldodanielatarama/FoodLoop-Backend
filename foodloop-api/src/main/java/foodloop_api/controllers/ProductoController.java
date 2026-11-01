@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 
 @RestController
@@ -26,12 +27,14 @@ public class ProductoController {
         return productoService.listar();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     @Operation(summary = "Registrar excedente", description = "Crea un nuevo producto a partir de un DTO validado")
     public Producto guardar(@Valid @RequestBody ProductoDTO dto) {
         return productoService.insertar(dto);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar excedente", description = "Elimina un producto mediante su ID")
     public String eliminar(@PathVariable Long id) {
@@ -45,6 +48,7 @@ public class ProductoController {
         return productoService.buscarPorId(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar excedente", description = "Modifica los datos de un producto ya existente")
     public Producto actualizar(@PathVariable Long id, @Valid @RequestBody ProductoDTO dto) {

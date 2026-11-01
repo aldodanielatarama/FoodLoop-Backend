@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FoodLoop: administra publicaciones, compras y donaciones de excedentes.">
+  <title>Plataforma | FoodLoop</title>
+  <link rel="icon" href="/assets/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/portal.css">
+  <script src="/js/portal.js" defer></script>
+</head>
+<body>
+  <div class="notice">FoodLoop · Proyecto académico · Operaciones con base de datos · Sin cobros ni entrega GPS por defecto · La inocuidad debe confirmarse por el comercio</div>
+  <header class="header">
+    <div class="headinner">
+      <a href="/index.html" class="logo"><img src="/assets/logo.svg" alt="" width="34" height="34"> food<span>loop</span><small>by SaVe</small></a>
+      <nav><button data-view="catalogo" class="navbtn selected">Explorar</button><button data-view="operaciones" class="navbtn">Mis solicitudes</button><button data-view="panel" class="navbtn">Mi panel</button><button data-view="avisos" class="navbtn">Avisos</button><a href="/index.html">Landing page ↗</a></nav>
+      <div id="sessionArea"><button class="btn primary" id="loginBtn">Iniciar sesión</button></div>
+    </div>
+  </header>
+  <main class="shell">
+    <section class="hero">
+      <div><p class="eyebrow">FOODLOOP · PLATAFORMA CONECTADA</p><h1>Comida que aprovechas.<br><em>Impacto que compartes.</em></h1><p>Busca excedentes con tiempo de recojo, reserva alimentos o coordina donaciones. Todo desde una sola aplicación con tu backend Java y PostgreSQL.</p><div class="hero-actions"><button class="btn primary" data-view="catalogo">Explorar alimentos</button><button class="btn outline" data-view="panel">Gestionar mi espacio</button></div></div>
+      <div class="hero-graphic"><div class="symbol">♻</div><div class="graphic-text">Menos merma.<br>Más oportunidades.</div><small>Ventas y donaciones coordinadas</small></div>
+    </section>
+    <section class="statusline"><div>● <span id="connectionStatus">Comprobando API...</span></div><div id="currentRole">Modo visitante</div></section>
+    <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+    <section id="view-catalogo" class="screen active">
+      <div class="sectionhead"><div><p class="eyebrow">EXCEDENTES PUBLICADOS</p><h2>Ofertas y donaciones disponibles</h2></div><button class="btn light" id="reloadCatalog">Actualizar catálogo ↻</button></div>
+      <div class="filters"><label>Buscar <input id="q" placeholder="Pan, frutas, platos..."></label><label>Modalidad <select id="mode"><option value="">Todas</option><option value="VENTA">Venta</option><option value="DONACION">Donación</option></select></label><label>Distrito <input id="district" placeholder="Ej. Miraflores"></label></div>
+      <div id="catalogGrid" class="cards"></div>
+      <p class="helper">Las fotografías pueden ser ilustrativas. Comprueba siempre información, horario y conservación del lote.</p>
+    </section>
+    <section id="view-operaciones" class="screen">
+      <div class="sectionhead"><div><p class="eyebrow">SOLICITUDES Y TRAZABILIDAD</p><h2>Mis compras y donaciones</h2></div></div>
+      <div id="operations"></div>
+    </section>
+    <section id="view-panel" class="screen">
+      <div class="sectionhead"><div><p class="eyebrow">GESTIÓN DE CUENTA</p><h2>Mi espacio en FoodLoop</h2></div></div>
+      <div id="rolePanel"></div>
+    </section>
+    <section id="view-avisos" class="screen">
+      <div class="sectionhead"><div><p class="eyebrow">SEGUIMIENTO</p><h2>Notificaciones e incidencias</h2></div></div>
+      <div id="notifications"></div>
+      <h3>Mis incidencias</h3><div id="issues"></div>
+    </section>
+  </main>
+  <dialog id="dialog"><button class="close" id="dialogClose" aria-label="Cerrar diálogo">×</button><div id="dialogBody"></div></dialog>
+  <footer class="footer"><strong>foodloop</strong> · Conoce más en la <a href="/index.html">landing page</a> · <a href="/swagger-ui/index.html">Swagger API</a><span>Plataforma académica SaVe · Sin transacciones de pago reales</span></footer>
+</body>
+</html>

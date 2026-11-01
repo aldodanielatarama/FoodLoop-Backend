@@ -1,0 +1,44 @@
+<div class="page-heading"><div class="container"><span class="eyebrow">CATÁLOGO FOODLOOP</span><h1>Alimentos disponibles</h1><p>Los datos vienen de PostgreSQL mediante el API de Spring Boot. Consulta las condiciones antes de reservar.</p></div></div>
+<section class="section"><div class="container">
+  <div class="filters">
+    <label>Buscar <input type="search" [(ngModel)]="termino" placeholder="Comida, comercio, distrito..." /></label>
+    <label>Tipo <select [(ngModel)]="modalidad"><option value="TODOS">Todos</option><option value="VENTA">Venta</option><option value="DONACION">Donación</option></select></label>
+    <button class="outline-btn" (click)="cargar()">Actualizar</button>
+  </div>
+  <p class="message error" *ngIf="error && !seleccionado">{{ error }}</p>
+  <p class="muted" *ngIf="cargando">Cargando publicaciones...</p>
+  <div class="products-grid">
+    <mat-card class="product-card" *ngFor="let lote of filtrados">
+      <div class="product-photo">
+        <img *ngIf="lote.imagenUrl" [src]="lote.imagenUrl" [alt]="lote.nombre" (error)="lote.imagenUrl = null" />
+        <div class="image-placeholder" *ngIf="!lote.imagenUrl"><span>▧</span><small>Añade una imagen al publicar</small></div>
+        <span class="photo-badge">{{ lote.modalidad === 'VENTA' ? 'Oferta' : 'Donación' }}</span>
+      </div>
+      <mat-card-content>
+        <div class="product-meta">{{ lote.categoria }} · {{ lote.distrito || 'Distrito no informado' }}</div>
+        <h3>{{ lote.nombre }}</h3><p class="muted small">{{ lote.comercio }}</p>
+        <div class="price-line" *ngIf="lote.modalidad === 'VENTA'"><strong>S/ {{ lote.precioLiquidacion | number:'1.2-2' }}</strong><s *ngIf="lote.precioOriginal">S/ {{ lote.precioOriginal | number:'1.2-2' }}</s></div>
+        <div class="price-line" *ngIf="lote.modalidad === 'DONACION'"><strong>Gratis · Donación</strong></div>
+        <div class="product-info">{{ lote.stockDisponible }} unidades · Hasta {{ lote.limiteRecojo | date:'dd/MM HH:mm' }}</div>
+        <button class="primary-btn full" (click)="abrir(lote)">Ver detalles</button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div class="empty-state" *ngIf="!cargando && filtrados.length === 0">No hay lotes disponibles con esos filtros. Prueba actualizar o cambiar la búsqueda.</div>
+</div></section>
+<div class="modal-backdrop" *ngIf="seleccionado as lote" (click)="cerrar()">
+  <section class="modal-panel" role="dialog" aria-modal="true" aria-label="Detalle de alimento" (click)="$event.stopPropagation()">
+    <button class="close-button" (click)="cerrar()" aria-label="Cerrar">×</button>
+    <span class="eyebrow">{{ lote.modalidad }} · LOTE #{{ lote.id }}</span><h2>{{ lote.nombre }}</h2>
+    <p>{{ lote.descripcion }}</p>
+    <div class="details-grid"><p><strong>Comercio:</strong> {{ lote.comercio }}</p><p><strong>Distrito:</strong> {{ lote.distrito }}</p><p><strong>Alérgenos:</strong> {{ lote.alergenos }}</p><p><strong>Conservación:</strong> {{ lote.conservacion }}</p><p><strong>Stock:</strong> {{ lote.stockDisponible }}</p><p><strong>Vence:</strong> {{ lote.fechaVencimiento | date:'dd/MM/yyyy HH:mm' }}</p><p><strong>Reserva hasta:</strong> {{ lote.limiteReserva | date:'dd/MM HH:mm' }}</p><p><strong>Recojo hasta:</strong> {{ lote.limiteRecojo | date:'dd/MM HH:mm' }}</p></div>
+    <p class="notice">La aptitud sanitaria es declarada por el responsable del lote; FoodLoop no realiza inspecciones físicas.</p>
+    <div *ngIf="puedeSolicitar(lote)">
+      <div class="form-row"><label>Cantidad <input type="number" [(ngModel)]="cantidad" min="1" [max]="lote.stockDisponible" /></label><label>Comentario <input [(ngModel)]="comentario" placeholder="Indicaciones opcionales" /></label></div>
+      <button class="primary-btn" (click)="solicitar()">{{ lote.modalidad === 'VENTA' ? 'Reservar unidades' : 'Solicitar donación' }}</button>
+    </div>
+    <div *ngIf="!auth.sesion"><p>Debes iniciar sesión para solicitar alimentos.</p><a mat-flat-button routerLink="/acceso" (click)="cerrar()">Ingresar</a></div>
+    <p class="muted" *ngIf="auth.sesion && !puedeSolicitar(lote)">Para esta publicación necesitas el rol {{ lote.modalidad === 'VENTA' ? 'COMPRADOR' : 'ORGANIZACION' }}.</p>
+    <p class="message error" *ngIf="error">{{ error }}</p><p class="message success" *ngIf="exito">{{ exito }}</p>
+  </section>
+</div>

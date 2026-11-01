@@ -4,6 +4,7 @@ import foodloop_api.dto.ProductoDTO;
 import foodloop_api.exceptions.ProductoNoEncontradoException;
 import foodloop_api.models.Producto;
 import foodloop_api.repositories.ProductoRepository;
+import foodloop_api.repositories.EstablecimientoRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -12,9 +13,11 @@ import java.util.List;
 public class ProductoService {
 
     private final ProductoRepository repository;
+    private final EstablecimientoRepository establecimientos;
 
-    public ProductoService(ProductoRepository repository) {
+    public ProductoService(ProductoRepository repository, EstablecimientoRepository establecimientos) {
         this.repository = repository;
+        this.establecimientos = establecimientos;
     }
 
     public List<Producto> listar() {
@@ -34,6 +37,7 @@ public class ProductoService {
         p.setCategoria(dto.getCategoria());
         p.setPrecioDescuento(dto.getPrecioDescuento());
         p.setStock(dto.getStock());
+        actualizarExtras(p, dto);
         return repository.save(p);
     }
 
@@ -45,8 +49,17 @@ public class ProductoService {
         productoExistente.setCategoria(dto.getCategoria());
         productoExistente.setPrecioDescuento(dto.getPrecioDescuento());
         productoExistente.setStock(dto.getStock());
+        actualizarExtras(productoExistente, dto);
 
         return repository.save(productoExistente);
+    }
+
+    private void actualizarExtras(Producto p, ProductoDTO d) {
+        if (d.getEstablecimientoId() != null) p.setEstablecimiento(establecimientos.findById(d.getEstablecimientoId()).orElseThrow(() -> new IllegalArgumentException("Establecimiento inexistente")));
+        p.setDescripcion(d.getDescripcion()); p.setIngredientes(d.getIngredientes());
+        p.setAlergenos(d.getAlergenos()); p.setPrecioOriginal(d.getPrecioOriginal());
+        p.setPesoPorUnidadKg(d.getPesoPorUnidadKg());
+        p.setRequiereRefrigeracion(d.getRequiereRefrigeracion()); p.setImagenUrl(d.getImagenUrl());
     }
 
     public void eliminar(Long id) {

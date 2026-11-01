@@ -1,0 +1,17 @@
+<div class="panel-section"><h2>Perfil de organización beneficiaria</h2><p class="muted">Solo una organización verificada puede solicitar donaciones. Indica tu capacidad y recursos de conservación.</p>
+ <div class="notice" *ngIf="perfil.id">Verificación: <strong>{{perfil.verificada?'VERIFICADA':'PENDIENTE'}}</strong></div>
+ <form class="form-grid" (ngSubmit)="guardar()">
+  <label>Razón social *<input name="razon" [(ngModel)]="perfil.razonSocial" required /></label><label>Identificación / RUC<input name="ruc" [(ngModel)]="perfil.identificacion" /></label>
+  <label>Dirección *<input name="dir" [(ngModel)]="perfil.direccion" required /></label><label>Distrito<input name="dis" [(ngModel)]="perfil.distrito" /></label>
+  <label>Contacto<input name="cont" [(ngModel)]="perfil.contacto" /></label><label>Capacidad de raciones<input name="cap" type="number" min="1" [(ngModel)]="perfil.capacidadRaciones" /></label>
+  <label class="checkline"><input name="trans" type="checkbox" [(ngModel)]="perfil.transportePropio" /> Cuenta con transporte</label><label class="checkline"><input name="frio" type="checkbox" [(ngModel)]="perfil.refrigeracion" /> Puede conservar alimentos refrigerados</label>
+  <div class="form-actions"><button class="primary-btn" type="submit">Guardar organización</button></div>
+ </form>
+</div>
+<div class="panel-section"><h2>Mis solicitudes de donación</h2><p class="muted">Solicita alimentos desde el catálogo y revisa las asignaciones del comercio. Si te ofrecen una cantidad menor, puedes aceptarla o rechazarla.</p>
+ <div class="list-cards"><article class="small-card" *ngFor="let s of solicitudes"><span class="eyebrow">SOLICITUD #{{s.id}} · LOTE #{{s.loteId}}</span><h3>{{s.estado}}</h3><p>Solicitadas: {{s.cantidadSolicitada}} · Asignadas: {{s.cantidadAsignada}}</p><p class="muted small" *ngIf="s.codigoRetiro">Código de recojo: <strong>{{s.codigoRetiro}}</strong></p>
+ <div class="actions" *ngIf="s.estado==='PARCIAL_OFRECIDA'"><button class="primary-btn" (click)="aceptar(s.id,true)">Aceptar parcial</button><button class="outline-btn" (click)="aceptar(s.id,false)">Rechazar parcial</button></div>
+ <div class="actions"><button class="outline-btn" *ngIf="s.estado==='ASIGNADA'||s.estado==='LISTA'||s.estado==='ENTREGADA'" (click)="verEntrega(s.id)">Ver seguimiento</button><button class="outline-btn" *ngIf="s.estado==='PENDIENTE'||s.estado==='ASIGNADA'||s.estado==='PARCIAL_OFRECIDA'" (click)="cancelar(s.id)">Cancelar</button></div></article></div>
+ <p *ngIf="!solicitudes.length" class="muted">Todavía no tienes solicitudes. Puedes empezar en el catálogo.</p>
+ <div *ngIf="entrega" class="small-card"><h3>Entrega de solicitud #{{entrega.solicitudId}}</h3><p>Estado: {{entrega.estado}} · Lugar: {{entrega.origen}}</p><p>Recojo registrado hasta: {{entrega.horaEstimada | date:'dd/MM HH:mm'}}</p></div>
+</div><p class="message success" *ngIf="mensaje">{{mensaje}}</p><p class="message error" *ngIf="error">{{error}}</p>

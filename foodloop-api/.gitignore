@@ -33,3 +33,19 @@ build/
 .vscode/
 
 oracleJdk-27/
+
+
+# Archivos generados por Java y Maven
+**/target/
+
+# Dependencias y archivos generados por Angular
+**/node_modules/
+**/.angular/
+**/dist/
+
+# Variables privadas y credenciales
+**/.env
+**/.env.*
+
+# Archivos temporales
+*.log
