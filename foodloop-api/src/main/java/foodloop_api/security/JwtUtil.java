@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-
+// Genera y valida los tokens JWT. La clave se lee de la variable de entorno FOODLOOP_JWT_SECRET.
 @Component
 public class JwtUtil {
     private final SecretKey key;
