@@ -191,3 +191,21 @@ textarea { min-height: 92px; resize: vertical; }
 .mat-mdc-form-field input.mat-mdc-input-element { border: none; padding: 0; background: transparent; box-shadow: none; }
 .auth-card mat-form-field { display: block; width: 100%; }
 .route-result { background:#f3f7f1; border:1px solid var(--border); border-radius:10px; padding:16px; overflow:auto; }
+
+.hero-photo {
+    width: 100%;
+    height: 440px;
+    object-fit: cover;
+    border-radius: 20px;
+    display: block;
+}
+
+@media (max-width: 700px) {
+    .hero-photo {
+        height: 300px;
+    }
+}
+
+#como-funciona {
+    scroll-margin-top: 100px;
+}

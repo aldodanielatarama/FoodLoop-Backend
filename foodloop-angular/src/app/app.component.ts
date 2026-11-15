@@ -16,7 +16,9 @@ import { AuthService } from './services/auth.service';
         <div class="nav-links">
           <a routerLink="/">Inicio</a>
           <a routerLink="/catalogo">Alimentos</a>
-          <a routerLink="/" fragment="como-funciona">Cómo funciona</a>
+          <a href="/#como-funciona" (click)="irComoFunciona($event)">
+            Cómo funciona
+          </a>
         </div>
         <div class="nav-actions">
           <a mat-button routerLink="/panel" *ngIf="auth.sesion">Mi panel</a>
@@ -38,4 +40,17 @@ import { AuthService } from './services/auth.service';
 export class AppComponent {
   constructor(public auth: AuthService, private router: Router) {}
   salir(): void { this.auth.salir(); this.router.navigateByUrl('/'); }
+
+  irComoFunciona(event: Event): void {
+    event.preventDefault();
+
+    this.router.navigate(['/']).then(() => {
+      setTimeout(() => {
+        document.getElementById('como-funciona')?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }, 100);
+    });
+  }
 }
