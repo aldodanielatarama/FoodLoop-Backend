@@ -13,7 +13,7 @@ public class JwtUtil {
     private final SecretKey key;
     public JwtUtil(@Value("${foodloop.jwt.secret:}") String secret) {
         if (secret == null || secret.getBytes(StandardCharsets.UTF_8).length < 32)
-            throw new IllegalStateException("Configura FOODLOOP_JWT_SECRET con al menos 32 bytes antes de iniciar FoodLoop");
+            throw new IllegalStateException("Configura FOODLOOP_JWT_SECRET (mínimo 32 caracteres) en las variables de entorno antes de iniciar FoodLoop");
         key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
     public String generarToken(String username) {
